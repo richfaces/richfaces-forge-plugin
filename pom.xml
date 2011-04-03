@@ -19,6 +19,11 @@
       <artifactId>forge-project-model</artifactId>
       <version>${forge.api.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.jboss.seam.forge</groupId>
+      <artifactId>forge-j2ee-plugins</artifactId>
+      <version>${forge.api.version}</version>
+    </dependency>
   </dependencies>
   <repositories>
     <repository>

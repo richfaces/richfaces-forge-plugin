@@ -1,9 +1,9 @@
 package org.richfaces.forge;
 
+import javax.faces.webapp.FacesServlet;
 import javax.inject.Inject;
 import org.apache.maven.model.DependencyManagement;
 import org.apache.maven.model.Model;
-import org.codehaus.plexus.util.cli.shell.Shell;
 import org.jboss.seam.forge.project.Project;
 import org.jboss.seam.forge.project.dependencies.Dependency;
 import org.jboss.seam.forge.project.dependencies.DependencyBuilder;
@@ -21,13 +21,15 @@ import org.jboss.seam.forge.shell.plugins.PipeOut;
 import org.jboss.seam.forge.shell.plugins.Plugin;
 import org.jboss.seam.forge.shell.plugins.RequiresFacet;
 import org.jboss.seam.forge.shell.project.ProjectScoped;
+import org.jboss.seam.forge.spec.servlet.ServletFacet;
+import org.jboss.shrinkwrap.descriptor.api.spec.servlet.web.WebAppDescriptor;
 
 @Alias("richfaces")
-@RequiresFacet(MavenDependencyFacet.class)
+@RequiresFacet({ MavenDependencyFacet.class, ServletFacet.class })
 public class RichFacesPlugin implements Plugin {
     private static final String RICHFACES_VERSION = "3.0.0.Final";
-    private static final String SUCCESS_MSG_FMT = "***SUCCESS*** %s dependency has been installed.";
-    private static final String ALREADY_INSTALLED_MSG_FMT = "***INFO*** %s dependency is already present.";
+    private static final String SUCCESS_MSG_FMT = "***SUCCESS*** %s %s has been installed.";
+    private static final String ALREADY_INSTALLED_MSG_FMT = "***INFO*** %s %s is already present.";
     
     @Inject
     @ProjectScoped Project project;
@@ -39,6 +41,65 @@ public class RichFacesPlugin implements Plugin {
     
     @Command("install")
     public void installCommand(PipeOut pipeOut) {
+        installDependencies(pipeOut);
+        ServletFacet servlet = project.getFacet(ServletFacet.class);
+        WebAppDescriptor descriptor = servlet.getConfig();
+        if (descriptor.getContextParam("javax.faces.PROJECT_STAGE") == null) {
+            descriptor.contextParam("javax.faces.PROJECT_STAGE", "Development");
+            pipeOut.println(ShellColor.GREEN, String.format(SUCCESS_MSG_FMT, "javax.faces.PROJECT_STAGE", "context-param"));
+        } else {
+            pipeOut.println(ShellColor.YELLOW, String.format(ALREADY_INSTALLED_MSG_FMT, "javax.faces.PROJECT_STAGE", "context-param"));
+        }
+        if (descriptor.getContextParam("javax.faces.SKIP_COMMENTS") == null) {
+            descriptor.contextParam("javax.faces.SKIP_COMMENTS", "true");
+            pipeOut.println(ShellColor.GREEN, String.format(SUCCESS_MSG_FMT, "javax.faces.SKIP_COMMENTS", "context-param"));
+        } else {
+            pipeOut.println(ShellColor.YELLOW, String.format(ALREADY_INSTALLED_MSG_FMT, "javax.faces.SKIP_COMMENTS", "context-param"));
+        }
+        installFacesServlet(descriptor, pipeOut);
+        descriptor.sessionTimeout(30);
+//        TODO: 
+//        <mime-mapping>
+//            <extension>ecss</extension>
+//            <mime-type>text/css</mime-type>
+//        </mime-mapping>
+        descriptor.welcomeFile("faces/index.xhtml");
+        servlet.saveConfig(descriptor);
+    }
+    
+//    private void createFaceletFile() {
+//        FileResource<?> welcomePage = (FileResource<?>) webRoot.getChild("index.html");
+//        welcomePage.setContents("<html><head><title>Welcome to Seam Forge</title></head>"
+//                + "<body>"
+//                + "<h1> [Hello] is Online</h1>"
+//                + "Powered by <a href=\"http://bit.ly/seamforge\">Seam Forge</a>"
+//                + "</body>"
+//                + "</html>");
+//    }
+    
+    private void installFacesServlet(WebAppDescriptor descriptor, PipeOut pipeOut) {
+//        TODO: When WebAppDescriptor.getServlets is implemented:
+//        List<ServletDef> servlets = descriptor.getServlets();
+//        if (servlets != null && ! servlets.isEmpty()) {
+//            for (ServletDef servlet : servlets) {
+//                pipeOut.println(ShellColor.MAGENTA, servlet.getName());
+//                if (servlet.getName().equals("Faces Servlet")) {
+//                    pipeOut.println(ShellColor.YELLOW, String.format(ALREADY_INSTALLED_MSG_FMT, "Faces Servlet", "mapping"));
+//                    return;
+//                }
+//            }
+//        } else {
+//            pipeOut.println("servlets list is empty");
+//        }
+        if (descriptor.exportAsString().contains(FacesServlet.class.getName())) {
+            pipeOut.println(ShellColor.YELLOW, String.format(ALREADY_INSTALLED_MSG_FMT, "Faces Servlet", "mapping"));
+            return;
+        }
+        descriptor.servlet("Faces Servlet", FacesServlet.class.getName(), "*.jsf", "/faces/*");
+        pipeOut.println(ShellColor.GREEN, String.format(SUCCESS_MSG_FMT, "Faces Servlet", "mapping"));
+    }
+    
+    private void installDependencies(PipeOut pipeOut) {
         installDependencyManagement(project, pipeOut);
         
         DependencyFacet deps = project.getFacet(DependencyFacet.class);
@@ -87,7 +148,7 @@ public class RichFacesPlugin implements Plugin {
             Dependency localDependency = new MavenDependencyAdapter(dependency);
             if (bomDependency.getArtifactId().equals(localDependency.getArtifactId())
                     && bomDependency.getGroupId().equals(localDependency.getGroupId())) {
-                pipeOut.println(ShellColor.YELLOW, String.format(ALREADY_INSTALLED_MSG_FMT, "RichFaces BOM"));
+                pipeOut.println(ShellColor.YELLOW, String.format(ALREADY_INSTALLED_MSG_FMT, "RichFaces BOM", "dependency"));
                 return;
             }
         }
@@ -95,16 +156,16 @@ public class RichFacesPlugin implements Plugin {
         pom.setDependencyManagement(dependencyManagement);
         maven.setPOM(pom);
         
-        pipeOut.println(ShellColor.GREEN, String.format(SUCCESS_MSG_FMT, "RichFaces BOM"));
+        pipeOut.println(ShellColor.GREEN, String.format(SUCCESS_MSG_FMT, "RichFaces BOM", "dependency"));
     }
     
     private void installDependency(DependencyFacet deps, Dependency dependency, PipeOut pipeOut) {
         String name = dependency.toCoordinates();
         if (deps.hasDependency(dependency)) {
-            pipeOut.println(ShellColor.YELLOW, String.format(ALREADY_INSTALLED_MSG_FMT, name));
+            pipeOut.println(ShellColor.YELLOW, String.format(ALREADY_INSTALLED_MSG_FMT, name, "dependency"));
         } else {
             deps.addDependency(dependency);
-            pipeOut.println(ShellColor.GREEN, String.format(SUCCESS_MSG_FMT, name));
+            pipeOut.println(ShellColor.GREEN, String.format(SUCCESS_MSG_FMT, name, "dependency"));
         }
     }
 }
