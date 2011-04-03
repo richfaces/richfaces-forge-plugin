@@ -1,8 +1,14 @@
 package org.richfaces.forge;
 
-import java.io.File;
-import java.io.FileReader;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.webapp.FacesServlet;
 import javax.inject.Inject;
 import org.apache.maven.model.DependencyManagement;
@@ -86,6 +92,11 @@ public class RichFacesPlugin implements Plugin {
         stream = RichFacesPlugin.class.getResourceAsStream("/org/richfaces/forge/index.xhtml");
         indexPage.setContents(stream);
         pipeOut.println(ShellColor.YELLOW, String.format(SUCCESS_MSG_FMT, "index.xhtml", "file"));
+        
+        FileResource<?> forgeIndexPage = (FileResource<?>) webRoot.getChild("index.html");
+        String contents;
+//        TODO: if (contents.contains("Welcome to Seam Forge")) {
+        forgeIndexPage.delete();
     }
     
     private void installFacesServlet(WebAppDescriptor descriptor, PipeOut pipeOut) {
@@ -106,7 +117,7 @@ public class RichFacesPlugin implements Plugin {
             pipeOut.println(ShellColor.YELLOW, String.format(ALREADY_INSTALLED_MSG_FMT, "Faces Servlet", "mapping"));
             return;
         }
-        descriptor.servlet("Faces Servlet", FacesServlet.class.getName(), "*.jsf", "/faces/*");
+        descriptor.servlet("Faces Servlet", FacesServlet.class, new String[] {"*.jsf", "/faces/*"});
         pipeOut.println(ShellColor.GREEN, String.format(SUCCESS_MSG_FMT, "Faces Servlet", "mapping"));
     }
     
