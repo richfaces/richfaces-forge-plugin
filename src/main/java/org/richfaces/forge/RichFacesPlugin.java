@@ -1,5 +1,8 @@
 package org.richfaces.forge;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.InputStream;
 import javax.faces.webapp.FacesServlet;
 import javax.inject.Inject;
 import org.apache.maven.model.DependencyManagement;
@@ -11,7 +14,10 @@ import org.jboss.seam.forge.project.dependencies.MavenDependencyAdapter;
 import org.jboss.seam.forge.project.dependencies.ScopeType;
 import org.jboss.seam.forge.project.facets.DependencyFacet;
 import org.jboss.seam.forge.project.facets.MavenCoreFacet;
+import org.jboss.seam.forge.project.facets.WebResourceFacet;
 import org.jboss.seam.forge.project.facets.builtin.MavenDependencyFacet;
+import org.jboss.seam.forge.resources.DirectoryResource;
+import org.jboss.seam.forge.resources.FileResource;
 import org.jboss.seam.forge.shell.ShellColor;
 import org.jboss.seam.forge.shell.plugins.Alias;
 import org.jboss.seam.forge.shell.plugins.Command;
@@ -25,9 +31,9 @@ import org.jboss.seam.forge.spec.servlet.ServletFacet;
 import org.jboss.shrinkwrap.descriptor.api.spec.servlet.web.WebAppDescriptor;
 
 @Alias("richfaces")
-@RequiresFacet({ MavenDependencyFacet.class, ServletFacet.class })
+@RequiresFacet({ MavenDependencyFacet.class, ServletFacet.class, WebResourceFacet.class })
 public class RichFacesPlugin implements Plugin {
-    private static final String RICHFACES_VERSION = "3.0.0.Final";
+    private static final String RICHFACES_VERSION = "4.0.0.Final";
     private static final String SUCCESS_MSG_FMT = "***SUCCESS*** %s %s has been installed.";
     private static final String ALREADY_INSTALLED_MSG_FMT = "***INFO*** %s %s is already present.";
     
@@ -65,17 +71,22 @@ public class RichFacesPlugin implements Plugin {
 //        </mime-mapping>
         descriptor.welcomeFile("faces/index.xhtml");
         servlet.saveConfig(descriptor);
+        createFaceletFiles(pipeOut);
     }
     
-//    private void createFaceletFile() {
-//        FileResource<?> welcomePage = (FileResource<?>) webRoot.getChild("index.html");
-//        welcomePage.setContents("<html><head><title>Welcome to Seam Forge</title></head>"
-//                + "<body>"
-//                + "<h1> [Hello] is Online</h1>"
-//                + "Powered by <a href=\"http://bit.ly/seamforge\">Seam Forge</a>"
-//                + "</body>"
-//                + "</html>");
-//    }
+    private void createFaceletFiles(PipeOut pipeOut) {
+        DirectoryResource webRoot = project.getFacet(WebResourceFacet.class).getWebRootDirectory();
+        DirectoryResource templateDirectory = webRoot.getOrCreateChildDirectory("templates");
+        FileResource<?> templatePage = (FileResource<?>) templateDirectory.getChild("template.xhtml");
+        InputStream stream = RichFacesPlugin.class.getResourceAsStream("/org/richfaces/forge/template.xhtml");
+        templatePage.setContents(stream);
+        pipeOut.println(ShellColor.YELLOW, String.format(SUCCESS_MSG_FMT, "template.xhtml", "file"));
+        
+        FileResource<?> indexPage = (FileResource<?>) webRoot.getChild("index.xhtml");
+        stream = RichFacesPlugin.class.getResourceAsStream("/org/richfaces/forge/index.xhtml");
+        indexPage.setContents(stream);
+        pipeOut.println(ShellColor.YELLOW, String.format(SUCCESS_MSG_FMT, "index.xhtml", "file"));
+    }
     
     private void installFacesServlet(WebAppDescriptor descriptor, PipeOut pipeOut) {
 //        TODO: When WebAppDescriptor.getServlets is implemented:
@@ -129,9 +140,10 @@ public class RichFacesPlugin implements Plugin {
         dependency.setArtifactId("ehcache").setGroupId("net.sf.ehcache");
         installDependency(deps, dependency, pipeOut);
         
-        dependency = DependencyBuilder.create();
-        dependency.setArtifactId("testng").setGroupId("org.testng").setVersion("5.1.0").setScopeType(ScopeType.TEST);
-        installDependency(deps, dependency, pipeOut);
+//        TODO: When forge has classifier support (<classifier>jdk15</classifier>)
+//        dependency = DependencyBuilder.create();
+//        dependency.setArtifactId("testng").setGroupId("org.testng").setVersion("5.1.0").setScopeType(ScopeType.TEST);
+//        installDependency(deps, dependency, pipeOut);
         
     }
     
@@ -168,5 +180,10 @@ public class RichFacesPlugin implements Plugin {
             pipeOut.println(ShellColor.GREEN, String.format(SUCCESS_MSG_FMT, name, "dependency"));
         }
     }
+    
+    private void installrichBean() {
+    
+    }
+    
 }
 
