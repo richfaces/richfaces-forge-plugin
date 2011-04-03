@@ -1,0 +1,7 @@
+target
+.classpath
+.project
+.settings
+*.sw?
+*/src/main/java/META-INF
+.faces-config.xml.jsfdia
