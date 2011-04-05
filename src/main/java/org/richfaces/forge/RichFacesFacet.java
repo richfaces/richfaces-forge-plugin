@@ -161,15 +161,4 @@ public class RichFacesFacet extends BaseFacet {
         maven.setPOM(pom);
 
     }
-
-    /**
-     * A helper method to install a dependency, and log the result
-     *
-     * @param deps
-     * @param dependency
-     * @param writer
-     */
-    private void installDependency(DependencyFacet deps, Dependency dependency) {
-        
-    }
 }
