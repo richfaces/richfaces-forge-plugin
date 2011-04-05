@@ -1,6 +1,5 @@
 package org.richfaces.forge;
 
-import com.google.inject.Inject;
 import java.util.Arrays;
 import javax.faces.webapp.FacesServlet;
 import org.apache.maven.model.DependencyManagement;
@@ -15,9 +14,6 @@ import org.jboss.seam.forge.project.facets.DependencyFacet;
 import org.jboss.seam.forge.project.facets.MavenCoreFacet;
 import org.jboss.seam.forge.project.facets.WebResourceFacet;
 import org.jboss.seam.forge.project.facets.builtin.MavenDependencyFacet;
-import org.jboss.seam.forge.shell.ShellColor;
-import org.jboss.seam.forge.shell.ShellPrintWriter;
-import org.jboss.seam.forge.shell.ShellPrompt;
 import org.jboss.seam.forge.shell.plugins.Alias;
 import org.jboss.seam.forge.shell.plugins.RequiresFacet;
 import org.jboss.seam.forge.spec.servlet.ServletFacet;
@@ -31,8 +27,6 @@ import org.jboss.shrinkwrap.descriptor.api.spec.servlet.web.WebAppDescriptor;
 @RequiresFacet({MavenDependencyFacet.class, ServletFacet.class, WebResourceFacet.class})
 public class RichFacesFacet extends BaseFacet {
 
-    @Deprecated
-    static final String RICHFACES_VERSION = "4.0.0.Final";
     static final String SUCCESS_MSG_FMT = "***SUCCESS*** %s %s has been installed.";
     static final String ALREADY_INSTALLED_MSG_FMT = "***INFO*** %s %s is already present.";
 
@@ -48,7 +42,14 @@ public class RichFacesFacet extends BaseFacet {
         DependencyFacet deps = getProject().getFacet(DependencyFacet.class);
         if (getProject().hasAllFacets(Arrays.asList(MavenDependencyFacet.class, WebResourceFacet.class, ServletFacet.class))) {
             for (RichFacesVersion version : RichFacesVersion.values()) {
-                if (deps.hasDependency(version.getDependency())) {
+                boolean hasVersionDependencies = true;
+                for (Dependency dependency : version.getDependencies()) {
+                    if (!deps.hasDependency(dependency)) {
+                        hasVersionDependencies = false;
+                        break;
+                    }
+                }
+                if (hasVersionDependencies) {
                     return true;
                 }
             }
@@ -120,31 +121,11 @@ public class RichFacesFacet extends BaseFacet {
         installDependencyManagement(project);
 
         DependencyFacet deps = project.getFacet(DependencyFacet.class);
-        DependencyBuilder dependency;
-
-        dependency = DependencyBuilder.create();
-        dependency.setArtifactId("richfaces-components-ui").setGroupId("org.richfaces.ui").setVersion(RICHFACES_VERSION);
-        installDependency(deps, dependency);
-
-        dependency = DependencyBuilder.create();
-        dependency.setArtifactId("richfaces-core-impl").setGroupId("org.richfaces.core").setVersion(RICHFACES_VERSION);
-        installDependency(deps, dependency);
-
-        dependency = DependencyBuilder.create();
-        dependency.setArtifactId("servlet-api").setGroupId("javax.servlet").setScopeType(ScopeType.PROVIDED);
-        installDependency(deps, dependency);
-
-        dependency = DependencyBuilder.create();
-        dependency.setArtifactId("jsp-api").setGroupId("javax.servlet.jsp").setScopeType(ScopeType.PROVIDED);
-        installDependency(deps, dependency);
-
-        dependency = DependencyBuilder.create();
-        dependency.setArtifactId("jstl").setGroupId("javax.servlet").setScopeType(ScopeType.PROVIDED);
-        installDependency(deps, dependency);
-
-        dependency = DependencyBuilder.create();
-        dependency.setArtifactId("ehcache").setGroupId("net.sf.ehcache");
-        installDependency(deps, dependency);
+        for (Dependency dependency : RichFacesVersion.RICHFACES_4_0_0.getDependencies()) {
+            if (!deps.hasDependency(dependency)) {
+                deps.addDependency(dependency);
+            }
+        }
 
 //        TODO: When forge has classifier support (<classifier>jdk15</classifier>)
 //        dependency = DependencyBuilder.create();
@@ -189,8 +170,6 @@ public class RichFacesFacet extends BaseFacet {
      * @param writer
      */
     private void installDependency(DependencyFacet deps, Dependency dependency) {
-        if (! deps.hasDependency(dependency)) {
-            deps.addDependency(dependency);
-        }
+        
     }
 }
