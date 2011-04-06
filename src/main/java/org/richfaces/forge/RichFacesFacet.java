@@ -1,19 +1,21 @@
 package org.richfaces.forge;
 
 import java.util.Arrays;
+import java.util.List;
 import javax.faces.webapp.FacesServlet;
+import javax.inject.Inject;
 import org.apache.maven.model.DependencyManagement;
 import org.apache.maven.model.Model;
 import org.jboss.seam.forge.project.Project;
 import org.jboss.seam.forge.project.dependencies.Dependency;
-import org.jboss.seam.forge.project.dependencies.DependencyBuilder;
 import org.jboss.seam.forge.project.dependencies.MavenDependencyAdapter;
-import org.jboss.seam.forge.project.dependencies.ScopeType;
 import org.jboss.seam.forge.project.facets.BaseFacet;
 import org.jboss.seam.forge.project.facets.DependencyFacet;
 import org.jboss.seam.forge.project.facets.MavenCoreFacet;
 import org.jboss.seam.forge.project.facets.WebResourceFacet;
 import org.jboss.seam.forge.project.facets.builtin.MavenDependencyFacet;
+import org.jboss.seam.forge.shell.ShellPrintWriter;
+import org.jboss.seam.forge.shell.ShellPrompt;
 import org.jboss.seam.forge.shell.plugins.Alias;
 import org.jboss.seam.forge.shell.plugins.RequiresFacet;
 import org.jboss.seam.forge.spec.servlet.ServletFacet;
@@ -29,10 +31,18 @@ public class RichFacesFacet extends BaseFacet {
 
     static final String SUCCESS_MSG_FMT = "***SUCCESS*** %s %s has been installed.";
     static final String ALREADY_INSTALLED_MSG_FMT = "***INFO*** %s %s is already present.";
+    
+    @Inject
+    private ShellPrompt prompt;
+    @Inject
+    private ShellPrintWriter writer;
 
     @Override
     public boolean install() {
-        installDependencies();
+        writer.println();
+        RichFacesVersion version = prompt.promptChoiceTyped("Which version of RichFaces?",
+                Arrays.asList(RichFacesVersion.values()));
+        installDependencies(version);
         installDescriptor();
         return true;
     }
@@ -117,11 +127,11 @@ public class RichFacesFacet extends BaseFacet {
      *
      * @param writer
      */
-    private void installDependencies() {
-        installDependencyManagement(project);
+    private void installDependencies(RichFacesVersion version) {
+        installDependencyManagement(version);
 
         DependencyFacet deps = project.getFacet(DependencyFacet.class);
-        for (Dependency dependency : RichFacesVersion.RICHFACES_4_0_0.getDependencies()) {
+        for (Dependency dependency : version.getDependencies()) {
             if (!deps.hasDependency(dependency)) {
                 deps.addDependency(dependency);
             }
@@ -140,8 +150,8 @@ public class RichFacesFacet extends BaseFacet {
      * @param project
      * @param writer
      */
-    private void installDependencyManagement(Project project) {
-        if (RichFacesVersion.RICHFACES_4_0_0.getDependencyManagement().isEmpty()) {
+    private void installDependencyManagement(RichFacesVersion version) {
+        if (version.getDependencyManagement().isEmpty()) {
             return;
         }
         MavenCoreFacet maven = project.getFacet(MavenCoreFacet.class);
