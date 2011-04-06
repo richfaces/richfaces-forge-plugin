@@ -141,24 +141,32 @@ public class RichFacesFacet extends BaseFacet {
      * @param writer
      */
     private void installDependencyManagement(Project project) {
+        if (RichFacesVersion.RICHFACES_4_0_0.getDependencyManagement().isEmpty()) {
+            return;
+        }
         MavenCoreFacet maven = project.getFacet(MavenCoreFacet.class);
         Model pom = maven.getPOM();
         DependencyManagement dependencyManagement = pom.getDependencyManagement();
         if (dependencyManagement == null) {
             dependencyManagement = new DependencyManagement();
         }
-        DependencyBuilder bomDependency = DependencyBuilder.create();
-        bomDependency.setArtifactId("richfaces-bom").setGroupId("org.richfaces").setVersion("4.0.0.Final").setScopeType(ScopeType.IMPORT).setPackagingType("pom");
-        for (org.apache.maven.model.Dependency dependency : dependencyManagement.getDependencies()) {
-            Dependency localDependency = new MavenDependencyAdapter(dependency);
-            if (bomDependency.getArtifactId().equals(localDependency.getArtifactId())
-                    && bomDependency.getGroupId().equals(localDependency.getGroupId())) {
-                return;
-            }
+        for (Dependency dependency : RichFacesVersion.RICHFACES_4_0_0.getDependencyManagement()) {
+            addDependencyManagement(dependencyManagement, dependency);
         }
-        dependencyManagement.addDependency(new MavenDependencyAdapter(bomDependency));
+       
         pom.setDependencyManagement(dependencyManagement);
         maven.setPOM(pom);
 
+    }
+    
+    private void addDependencyManagement(DependencyManagement dependencyManagement, Dependency newDependency) {
+        for (org.apache.maven.model.Dependency exisitngMavenDep : dependencyManagement.getDependencies()) {
+            Dependency existingDependency = new MavenDependencyAdapter(exisitngMavenDep);
+            if (newDependency.getArtifactId().equals(existingDependency.getArtifactId())
+                    && newDependency.getGroupId().equals(existingDependency.getGroupId())) {
+                return;
+            }
+        }
+        dependencyManagement.addDependency(new MavenDependencyAdapter(newDependency));
     }
 }
