@@ -7,10 +7,6 @@ import javax.faces.webapp.FacesServlet;
 import javax.inject.Inject;
 import javax.servlet.DispatcherType;
 
-import org.apache.maven.model.DependencyManagement;
-import org.apache.maven.model.Model;
-import org.jboss.forge.maven.MavenCoreFacet;
-import org.jboss.forge.maven.dependencies.MavenDependencyAdapter;
 import org.jboss.forge.project.dependencies.Dependency;
 import org.jboss.forge.project.facets.BaseFacet;
 import org.jboss.forge.project.facets.DependencyFacet;
@@ -94,10 +90,7 @@ public class RichFacesFacet extends BaseFacet
          descriptor.contextParam("javax.faces.SKIP_COMMENTS", "true");
       }
 
-      if (isFacesServletDefined(descriptor))
-      {
-      }
-      else
+      if (!isFacesServletDefined(descriptor) & !descriptor.getVersion().startsWith("3"))
       {
          descriptor.facesServlet();
       }
@@ -167,10 +160,7 @@ public class RichFacesFacet extends BaseFacet
       DependencyFacet deps = project.getFacet(DependencyFacet.class);
       for (Dependency dependency : version.getDependencies())
       {
-         if (!deps.hasDependency(dependency))
-         {
-            deps.addDependency(dependency);
-         }
+         deps.addDependency(dependency);
       }
 
       // TODO: When forge has classifier support (<classifier>jdk15</classifier>)
@@ -188,38 +178,10 @@ public class RichFacesFacet extends BaseFacet
     */
    private void installDependencyManagement(RichFacesVersion version)
    {
-      if (version.getDependencyManagement().isEmpty())
-      {
-         return;
-      }
-      MavenCoreFacet maven = project.getFacet(MavenCoreFacet.class);
-      Model pom = maven.getPOM();
-      DependencyManagement dependencyManagement = pom.getDependencyManagement();
-      if (dependencyManagement == null)
-      {
-         dependencyManagement = new DependencyManagement();
-      }
+      DependencyFacet deps = project.getFacet(DependencyFacet.class);
       for (Dependency dependency : RichFacesVersion.RICHFACES_4_0_0.getDependencyManagement())
       {
-         addDependencyManagement(dependencyManagement, dependency);
+         deps.addManagedDependency(dependency);
       }
-
-      pom.setDependencyManagement(dependencyManagement);
-      maven.setPOM(pom);
-
-   }
-
-   private void addDependencyManagement(DependencyManagement dependencyManagement, Dependency newDependency)
-   {
-      for (org.apache.maven.model.Dependency exisitngMavenDep : dependencyManagement.getDependencies())
-      {
-         Dependency existingDependency = new MavenDependencyAdapter(exisitngMavenDep);
-         if (newDependency.getArtifactId().equals(existingDependency.getArtifactId())
-                    && newDependency.getGroupId().equals(existingDependency.getGroupId()))
-         {
-            return;
-         }
-      }
-      dependencyManagement.addDependency(new MavenDependencyAdapter(newDependency));
    }
 }

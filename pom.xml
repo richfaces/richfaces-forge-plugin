@@ -16,11 +16,6 @@
     </dependency>
     <dependency>
       <groupId>org.jboss.forge</groupId>
-      <artifactId>forge-maven-api</artifactId>
-      <version>${forge.api.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.forge</groupId>
       <artifactId>forge-javaee-api</artifactId>
       <version>${forge.api.version}</version>
     </dependency>
