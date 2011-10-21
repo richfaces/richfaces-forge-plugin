@@ -1,12 +1,5 @@
 package org.richfaces.forge;
 
-import java.util.Arrays;
-import java.util.List;
-
-import javax.faces.webapp.FacesServlet;
-import javax.inject.Inject;
-import javax.servlet.DispatcherType;
-
 import org.jboss.forge.project.dependencies.Dependency;
 import org.jboss.forge.project.facets.BaseFacet;
 import org.jboss.forge.project.facets.DependencyFacet;
@@ -19,6 +12,12 @@ import org.jboss.forge.spec.javaee.ServletFacet;
 import org.jboss.shrinkwrap.descriptor.api.spec.servlet.web.FilterDef;
 import org.jboss.shrinkwrap.descriptor.api.spec.servlet.web.ServletDef;
 import org.jboss.shrinkwrap.descriptor.api.spec.servlet.web.WebAppDescriptor;
+
+import javax.faces.webapp.FacesServlet;
+import javax.inject.Inject;
+import javax.servlet.DispatcherType;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author bleathem
