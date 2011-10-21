@@ -8,12 +8,12 @@ import org.jboss.forge.shell.ShellPrintWriter;
 import org.jboss.forge.shell.ShellPrompt;
 import org.jboss.forge.shell.plugins.Alias;
 import org.jboss.forge.shell.plugins.RequiresFacet;
+import org.jboss.forge.spec.javaee.FacesFacet;
 import org.jboss.forge.spec.javaee.ServletFacet;
 import org.jboss.shrinkwrap.descriptor.api.spec.servlet.web.FilterDef;
 import org.jboss.shrinkwrap.descriptor.api.spec.servlet.web.ServletDef;
 import org.jboss.shrinkwrap.descriptor.api.spec.servlet.web.WebAppDescriptor;
 
-import javax.faces.webapp.FacesServlet;
 import javax.inject.Inject;
 import javax.servlet.DispatcherType;
 import java.util.Arrays;
@@ -23,8 +23,9 @@ import java.util.List;
  * @author bleathem
  */
 @Alias("org.richfaces")
-@RequiresFacet({DependencyFacet.class, ServletFacet.class, WebResourceFacet.class})
+@RequiresFacet({DependencyFacet.class, FacesFacet.class, WebResourceFacet.class})
 public class RichFacesFacet extends BaseFacet {
+    static final String FACES_SERVLET_CLASS = "javax.faces.webapp.FacesServlet";
 
     static final String SUCCESS_MSG_FMT = "***SUCCESS*** %s %s has been installed.";
     static final String ALREADY_INSTALLED_MSG_FMT = "***INFO*** %s %s is already present.";
@@ -68,7 +69,6 @@ public class RichFacesFacet extends BaseFacet {
      * Set the context-params and Servlet definition if they are not yet set.
      *
      * @param version
-     * @param writer
      */
     private void installDescriptor(RichFacesVersion version) {
         ServletFacet servlet = project.getFacet(ServletFacet.class);
@@ -85,7 +85,7 @@ public class RichFacesFacet extends BaseFacet {
             List<ServletDef> servlets = descriptor.getServlets();
             String facesServletName = "FacesServlet";
             for (ServletDef servletDef : servlets) {
-                if (FacesServlet.class.getName().equals(servletDef.getServletClass())) {
+                if (FACES_SERVLET_CLASS.equals(servletDef.getServletClass())) {
                     facesServletName = servletDef.getName();
                 }
             }
@@ -127,13 +127,13 @@ public class RichFacesFacet extends BaseFacet {
         // } else {
         // writer.println("servlets list is empty");
         // }
-        return descriptor.exportAsString().contains(FacesServlet.class.getName());
+        return descriptor.exportAsString().contains(FACES_SERVLET_CLASS);
     }
 
     /**
      * Install the maven dependencies required for RichFaces
      *
-     * @param writer
+     * @param version
      */
     private void installDependencies(RichFacesVersion version) {
         installDependencyManagement(version);
@@ -153,8 +153,7 @@ public class RichFacesFacet extends BaseFacet {
     /**
      * Install the richfaces-bom in the pom's dependency management
      *
-     * @param project
-     * @param writer
+     * @param version
      */
     private void installDependencyManagement(RichFacesVersion version) {
         DependencyFacet deps = project.getFacet(DependencyFacet.class);

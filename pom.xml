@@ -11,13 +11,9 @@
   <dependencies>
     <dependency>
       <groupId>org.jboss.forge</groupId>
-      <artifactId>forge-shell-api</artifactId>
-      <version>${forge.api.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.forge</groupId>
       <artifactId>forge-javaee-api</artifactId>
       <version>${forge.api.version}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
   <repositories>
