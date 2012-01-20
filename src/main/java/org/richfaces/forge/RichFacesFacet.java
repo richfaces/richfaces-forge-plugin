@@ -42,7 +42,7 @@ public class RichFacesFacet extends BaseFacet
    {
       writer.println();
       RichFacesVersion version = prompt.promptChoiceTyped("Which version of RichFaces?",
-               Arrays.asList(RichFacesVersion.values()));
+               Arrays.asList(RichFacesVersion.values()), RichFacesVersion.RICHFACES_4_0_0);
       installDependencies(version);
       installDescriptor(version);
       return true;
