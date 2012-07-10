@@ -42,7 +42,7 @@ public class RichFacesFacet extends BaseFacet
    {
       writer.println();
       RichFacesVersion version = prompt.promptChoiceTyped("Which version of RichFaces?",
-               Arrays.asList(RichFacesVersion.values()), RichFacesVersion.RICHFACES_4_2_0);
+               Arrays.asList(RichFacesVersion.values()), RichFacesVersion.RICHFACES_4_2_2);
       installDependencies(version);
       installDescriptor(version);
       return true;
@@ -71,7 +71,7 @@ public class RichFacesFacet extends BaseFacet
 
    /**
     * Set the context-params and Servlet definition if they are not yet set.
-    * 
+    *
     * @param version
     */
    private void installDescriptor(final RichFacesVersion version)
@@ -114,7 +114,7 @@ public class RichFacesFacet extends BaseFacet
 
    /**
     * A helper method to determine if the Faces Servlet is defined in the web.xml
-    * 
+    *
     * @param descriptor
     * @return true if the Faces Servlet is defined, false otherwise
     */
@@ -138,7 +138,7 @@ public class RichFacesFacet extends BaseFacet
 
    /**
     * Install the maven dependencies required for RichFaces
-    * 
+    *
     * @param version
     */
    private void installDependencies(final RichFacesVersion version)
@@ -159,13 +159,13 @@ public class RichFacesFacet extends BaseFacet
 
    /**
     * Install the richfaces-bom in the pom's dependency management
-    * 
+    *
     * @param version
     */
    private void installDependencyManagement(final RichFacesVersion version)
    {
       DependencyFacet deps = project.getFacet(DependencyFacet.class);
-      for (Dependency dependency : RichFacesVersion.RICHFACES_4_2_0.getDependencyManagement()) {
+      for (Dependency dependency : RichFacesVersion.RICHFACES_4_2_2.getDependencyManagement()) {
          deps.addManagedDependency(dependency);
       }
    }
