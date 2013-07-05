@@ -13,6 +13,16 @@ import org.jboss.forge.project.dependencies.ScopeType;
  */
 public enum RichFacesVersion {
 
+    RICHFACES_4_3_2("RichFaces 4.3.2.Final",
+            Arrays.asList(
+                    DependencyBuilder.create("org.richfaces.ui:richfaces-components-ui:4.3.2.Final"),
+                    DependencyBuilder.create("org.richfaces.core:richfaces-core-impl:4.3.2.Final")
+            ),
+            Arrays.asList(
+                    DependencyBuilder.create("org.richfaces:richfaces-bom:4.3.2.Final").setScopeType(ScopeType.IMPORT)
+                            .setPackagingType("pom")
+            )
+    ),
     RICHFACES_4_2_2("RichFaces 4.2.2.Final",
             Arrays.asList(
                     DependencyBuilder.create("org.richfaces.ui:richfaces-components-ui:4.2.2.Final"),

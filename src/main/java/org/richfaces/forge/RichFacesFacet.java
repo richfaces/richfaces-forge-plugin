@@ -42,7 +42,7 @@ public class RichFacesFacet extends BaseFacet
    {
       writer.println();
       RichFacesVersion version = prompt.promptChoiceTyped("Which version of RichFaces?",
-               Arrays.asList(RichFacesVersion.values()), RichFacesVersion.RICHFACES_4_2_2);
+               Arrays.asList(RichFacesVersion.values()), RichFacesVersion.RICHFACES_4_3_2);
       installDependencies(version);
       installDescriptor(version);
       return true;
@@ -165,7 +165,7 @@ public class RichFacesFacet extends BaseFacet
    private void installDependencyManagement(final RichFacesVersion version)
    {
       DependencyFacet deps = project.getFacet(DependencyFacet.class);
-      for (Dependency dependency : RichFacesVersion.RICHFACES_4_2_2.getDependencyManagement()) {
+      for (Dependency dependency : RichFacesVersion.RICHFACES_4_3_2.getDependencyManagement()) {
          deps.addManagedDependency(dependency);
       }
    }
