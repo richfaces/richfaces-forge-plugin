@@ -1,7 +1,10 @@
 package org.richfaces.forge;
 
+import org.jboss.forge.parser.JavaParser;
+import org.jboss.forge.parser.java.JavaSource;
 import org.jboss.forge.project.Project;
 import org.jboss.forge.project.facets.JavaSourceFacet;
+import org.jboss.forge.project.facets.MetadataFacet;
 import org.jboss.forge.project.facets.WebResourceFacet;
 import org.jboss.forge.project.facets.events.InstallFacets;
 import org.jboss.forge.resources.DirectoryResource;
@@ -18,6 +21,7 @@ import org.jboss.forge.shell.plugins.RequiresProject;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 @Alias("richfaces")
@@ -66,7 +70,7 @@ public class RichFacesPlugin implements Plugin {
     }
 
     @Command("install-example-facelet")
-    public void installExampleFacelets(final PipeOut pipeOut) {
+    public void installExampleFacelets(final PipeOut pipeOut) throws FileNotFoundException {
         assertInstalled();
         createFaceletFiles(pipeOut);
         createRichBean(pipeOut);
@@ -97,16 +101,19 @@ public class RichFacesPlugin implements Plugin {
     }
 
     /**
-     * Create a simple JSF managed bean to back the RichFaces input in the example facelet file
+     * Create a simple JSF managed bean to back the RichFaces input in the  example facelet file
      *
      * @param pipeOut
      */
-    private void createRichBean(final PipeOut pipeOut) {
+    private void createRichBean(final PipeOut pipeOut) throws FileNotFoundException {
         JavaSourceFacet source = project.getFacet(JavaSourceFacet.class);
         DirectoryResource sourceRoot = source.getBasePackageResource();
         FileResource<?> indexPage = (FileResource<?>) sourceRoot.getChild("RichBean.java");
         InputStream stream = RichFacesPlugin.class.getResourceAsStream("/org/richfaces/forge/RichBean.java.txt");
-        indexPage.setContents(stream);
+        JavaSource javaSource = JavaParser.parse(stream);
+        String pacakgename = project.getFacet(MetadataFacet.class).getTopLevelPackage();
+        javaSource.setPackage(pacakgename);
+        source.saveJavaSource(javaSource);
         pipeOut.println(ShellColor.YELLOW, String.format(RichFacesFacet.SUCCESS_MSG_FMT, "RichBean", "class"));
     }
 }

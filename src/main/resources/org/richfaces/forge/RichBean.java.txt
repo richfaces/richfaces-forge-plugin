@@ -1,4 +1,4 @@
-package ca.bleathem.richfaces;
+package packagename;
 
 import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
