@@ -1,17 +1,25 @@
 package org.richfaces.forge;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import org.jboss.forge.project.dependencies.Dependency;
-import org.jboss.forge.project.dependencies.DependencyBuilder;
-import org.jboss.forge.project.dependencies.ScopeType;
+import org.jboss.forge.addon.dependencies.Dependency;
+import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 
 /**
  * @author bleathem
  */
 public enum RichFacesVersion {
+
+    RICHFACES_4_5_0("RichFaces 4.5.0.CR1",
+            Arrays.asList(
+                DependencyBuilder.create("org.richfaces:richfaces:4.5.0.CR1")
+                ),
+            Arrays.asList(
+                DependencyBuilder.create("org.richfaces:richfaces:4.5.0.CR1")
+                )
+
+        ),
 
     RICHFACES_4_3_2("RichFaces 4.3.2.Final",
             Arrays.asList(
@@ -19,8 +27,8 @@ public enum RichFacesVersion {
                     DependencyBuilder.create("org.richfaces.core:richfaces-core-impl:4.3.2.Final")
             ),
             Arrays.asList(
-                    DependencyBuilder.create("org.richfaces:richfaces-bom:4.3.2.Final").setScopeType(ScopeType.IMPORT)
-                            .setPackagingType("pom")
+                    DependencyBuilder.create("org.richfaces:richfaces-bom:4.3.2.Final").setScopeType("import")
+                            .setPackaging("pom")
             )
     ),
     RICHFACES_4_2_2("RichFaces 4.2.2.Final",
@@ -29,17 +37,9 @@ public enum RichFacesVersion {
                     DependencyBuilder.create("org.richfaces.core:richfaces-core-impl:4.2.2.Final")
             ),
             Arrays.asList(
-                    DependencyBuilder.create("org.richfaces:richfaces-bom:4.2.2.Final").setScopeType(ScopeType.IMPORT)
-                            .setPackagingType("pom")
+                    DependencyBuilder.create("org.richfaces:richfaces-bom:4.2.2.Final").setScopeType("import")
+                            .setPackaging("pom")
             )
-    ),
-    RICHFACES_3_3_3("RichFaces 3.3.3.Final",
-            Arrays.asList(
-                    DependencyBuilder.create("org.richfaces.ui:richfaces-ui:3.3.3.Final"),
-                    DependencyBuilder.create("org.richfaces.framework:richfaces-impl:3.3.3.Final"),
-                    DependencyBuilder.create("org.richfaces.framework:richfaces-api:3.3.3.Final")
-            ),
-            Collections.EMPTY_LIST
     );
 
     private List<? extends Dependency> dependencies;
