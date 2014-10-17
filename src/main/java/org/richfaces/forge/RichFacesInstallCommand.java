@@ -5,6 +5,7 @@ import java.util.concurrent.Callable;
 import javax.inject.Inject;
 
 import org.jboss.forge.addon.facets.FacetFactory;
+import org.jboss.forge.addon.javaee.servlet.ServletFacet;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.dependencies.DependencyInstaller;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
@@ -20,7 +21,7 @@ import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.addon.ui.util.Metadata;
 
-public class RichFacesCommand extends AbstractProjectCommand implements UICommand {
+public class RichFacesInstallCommand extends AbstractProjectCommand implements UICommand {
 
     @Inject
     public DependencyInstaller installer;
@@ -43,22 +44,25 @@ public class RichFacesCommand extends AbstractProjectCommand implements UIComman
         builder.add(richfacesVersion);
 
         richfacesVersion.setDefaultValue(new Callable<String>() {
-           @Override
-           public String call() throws Exception {
-              return richFacesFacet.getDefaultVersion();
-           }
+            @Override
+            public String call() throws Exception {
+                return richFacesFacet.getDefaultVersion();
+            }
         });
         richfacesVersion.setValueChoices(new Callable<Iterable<String>>() {
-           @Override
-           public Iterable<String> call() throws Exception {
-              return richFacesFacet.getAvailableVersions();
-           }
+            @Override
+            public Iterable<String> call() throws Exception {
+                return richFacesFacet.getAvailableVersions();
+            }
         });
     }
 
     @Override
     public Result execute(UIExecutionContext context) throws Exception {
         richFacesFacet.setVersion(richfacesVersion.getValue());
+        if (!getSelectedProject(context).hasFacet(ServletFacet.class)) {
+            return Results.fail("Servlet Facet is not installed. Use 'servlet-setup' to install it.");
+        }
         facetFactory.install(getSelectedProject(context), richFacesFacet);
         return Results.success("Installed RichFaces " + richfacesVersion.getValue());
     }
