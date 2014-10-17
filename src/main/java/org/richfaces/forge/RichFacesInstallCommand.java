@@ -39,25 +39,21 @@ public class RichFacesInstallCommand extends AbstractProjectCommand implements U
     @WithAttributes(shortName = 'v', label = "RichFaces version", type = InputType.DROPDOWN)
     private UISelectOne<String> richfacesVersion;
 
-    @Override
     public void initializeUI(UIBuilder builder) throws Exception {
         builder.add(richfacesVersion);
 
         richfacesVersion.setDefaultValue(new Callable<String>() {
-            @Override
             public String call() throws Exception {
                 return richFacesFacet.getDefaultVersion();
             }
         });
         richfacesVersion.setValueChoices(new Callable<Iterable<String>>() {
-            @Override
             public Iterable<String> call() throws Exception {
                 return richFacesFacet.getAvailableVersions();
             }
         });
     }
 
-    @Override
     public Result execute(UIExecutionContext context) throws Exception {
         richFacesFacet.setVersion(richfacesVersion.getValue());
         if (!getSelectedProject(context).hasFacet(ServletFacet.class)) {

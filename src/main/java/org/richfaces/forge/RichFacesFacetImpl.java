@@ -36,14 +36,12 @@ import org.jboss.shrinkwrap.descriptor.api.webapp31.WebAppDescriptor;
 public class RichFacesFacetImpl extends RichFacesFacet {
     static final String FACES_SERVLET_CLASS = "javax.faces.webapp.FacesServlet";
 
-    @Override
     public boolean install() {
         installDependencies(version);
         installDescriptor(version);
         return true;
     }
 
-    @Override
     public boolean isInstalled() {
         DependencyFacet deps = getFaceted().getFacet(DependencyFacet.class);
         if (getFaceted().hasAllFacets(DependencyFacet.class, WebResourcesFacet.class, ServletFacet.class)) {

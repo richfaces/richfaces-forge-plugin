@@ -27,7 +27,6 @@ public class RichFacesInstallFaceletCommand extends AbstractProjectCommand imple
     @Inject
     private RichFacesFacet richFacesFacet;
 
-    @Override
     public Result execute(UIExecutionContext context) throws Exception {
         Project project = getSelectedProject(context);
 
@@ -41,7 +40,6 @@ public class RichFacesInstallFaceletCommand extends AbstractProjectCommand imple
         return Results.success("Installed RichFaces facelet");
     }
 
-    @Override
     public void initializeUI(UIBuilder builder) throws Exception {
     }
 
