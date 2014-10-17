@@ -178,12 +178,12 @@ public class RichFacesFacetImpl extends RichFacesFacet {
         DirectoryResource webRoot = project.getFacet(WebResourcesFacet.class).getWebRootDirectory();
         DirectoryResource templateDirectory = webRoot.getOrCreateChildDirectory("templates");
         FileResource<?> templatePage = (FileResource<?>) templateDirectory.getChild("template.xhtml");
-        InputStream stream = RichFacesPlugin.class.getResourceAsStream("/org/richfaces/forge/template.xhtml");
+        InputStream stream = RichFacesFacet.class.getResourceAsStream("/org/richfaces/forge/template.xhtml");
         templatePage.setContents(stream);
         ShellMessages.success(uiOutput.out(), String.format(RichFacesFacet.SUCCESS_MSG_FMT, "template.xhtml", "file"));
 
         FileResource<?> indexPage = (FileResource<?>) webRoot.getChild("index.xhtml");
-        stream = RichFacesPlugin.class.getResourceAsStream("/org/richfaces/forge/index.xhtml");
+        stream = RichFacesFacet.class.getResourceAsStream("/org/richfaces/forge/index.xhtml");
         indexPage.setContents(stream);
         ShellMessages.success(uiOutput.out(), String.format(RichFacesFacet.SUCCESS_MSG_FMT, "index.xhtml", "file"));
 
@@ -203,7 +203,7 @@ public class RichFacesFacetImpl extends RichFacesFacet {
         JavaSourceFacet source = project.getFacet(JavaSourceFacet.class);
         DirectoryResource sourceRoot = source.getBasePackageDirectory();
         FileResource<?> indexPage = (FileResource<?>) sourceRoot.getChild("RichBean.java");
-        InputStream stream = RichFacesPlugin.class.getResourceAsStream("/org/richfaces/forge/RichBean.java.txt");
+        InputStream stream = RichFacesFacet.class.getResourceAsStream("/org/richfaces/forge/RichBean.java.txt");
         JavaSource javaSource = Roaster.parse(JavaSource.class, stream);
         // JavaParser.parse(stream);
         String pacakgename = project.getFacet(MetadataFacet.class).getProjectGroupName();
