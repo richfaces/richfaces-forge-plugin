@@ -19,9 +19,10 @@ import org.jboss.forge.addon.ui.metadata.UICommandMetadata;
 import org.jboss.forge.addon.ui.metadata.WithAttributes;
 import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.result.Results;
+import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 
-public class RichFacesInstallCommand extends AbstractProjectCommand implements UICommand {
+public class RichFacesSetupCommand extends AbstractProjectCommand implements UICommand {
 
     @Inject
     public DependencyInstaller installer;
@@ -65,7 +66,8 @@ public class RichFacesInstallCommand extends AbstractProjectCommand implements U
 
     @Override
     public UICommandMetadata getMetadata(UIContext context) {
-        return Metadata.forCommand(getClass()).name("RichFaces: Install");
+        return Metadata.forCommand(getClass()).name("RichFaces: Setup").category(Categories.create("RichFaces"))
+            .description("Setup RichFaces in your project");
     }
 
     @Override
