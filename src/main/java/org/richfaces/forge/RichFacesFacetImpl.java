@@ -20,7 +20,6 @@ import org.jboss.forge.addon.projects.facets.ResourcesFacet;
 import org.jboss.forge.addon.projects.facets.WebResourcesFacet;
 import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.resource.FileResource;
-import org.jboss.forge.addon.shell.ShellMessages;
 import org.jboss.forge.addon.ui.output.UIOutput;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaSource;
@@ -180,12 +179,12 @@ public class RichFacesFacetImpl extends RichFacesFacet {
         FileResource<?> templatePage = (FileResource<?>) templateDirectory.getChild("template.xhtml");
         InputStream stream = RichFacesFacet.class.getResourceAsStream("/org/richfaces/forge/template.xhtml");
         templatePage.setContents(stream);
-        ShellMessages.success(uiOutput.out(), String.format(RichFacesFacet.SUCCESS_MSG_FMT, "template.xhtml", "file"));
+        uiOutput.success(uiOutput.out(), String.format(RichFacesFacet.SUCCESS_MSG_FMT, "template.xhtml", "file"));
 
         FileResource<?> indexPage = (FileResource<?>) webRoot.getChild("index.xhtml");
         stream = RichFacesFacet.class.getResourceAsStream("/org/richfaces/forge/index.xhtml");
         indexPage.setContents(stream);
-        ShellMessages.success(uiOutput.out(), String.format(RichFacesFacet.SUCCESS_MSG_FMT, "index.xhtml", "file"));
+        uiOutput.success(uiOutput.out(), String.format(RichFacesFacet.SUCCESS_MSG_FMT, "index.xhtml", "file"));
 
         FileResource<?> forgeIndexPage = (FileResource<?>) webRoot.getChild("index.html");
         String contents;
@@ -209,6 +208,6 @@ public class RichFacesFacetImpl extends RichFacesFacet {
         String pacakgename = project.getFacet(MetadataFacet.class).getProjectGroupName();
         javaSource.setPackage(pacakgename);
         source.saveJavaSource(javaSource);
-        ShellMessages.success(uiOutput.out(), String.format(RichFacesFacet.SUCCESS_MSG_FMT, "RichBean", "class"));
+        uiOutput.success(uiOutput.out(), String.format(RichFacesFacet.SUCCESS_MSG_FMT, "RichBean", "class"));
     }
 }
