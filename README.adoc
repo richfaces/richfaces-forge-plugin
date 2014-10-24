@@ -1,0 +1,26 @@
+== Creating and running project made with RichFaces Forge addon
+
+=== Prerequsities
+* JDK 1.6 or better
+* Maven 3.0.3 or later
+* Forge (http://forge.jboss.org/[link to home page])
+
+=== Creating project
+* start *Forge*, then from the *Forge prompt* do the following steps:
+** install RichFaces addon:
+*** from maven repository:
+**** `addon-install --coordinate`
+**** `org.richfaces.forge:richfaces-forge-addon`
+*** or from git: `addon-install-from-git --url https://github.com/richfaces/richfaces-forge-plugin.git`
+** create project (see http://forge.jboss.org/documentation[Forge documentation])
+*** e.g. `project-new --named richfaces-example --topLevelPackage org.richfaces.example --type war --finalName richfaces-example`
+** then run following commands to install:
+*** Servlet API: `servlet-setup`
+*** JavaServer Faces: `faces-setup`
+*** RichFaces 4.5.0: `richfaces-setup`
+*** RichFaces facelet: `richfaces-facelet`
+
+=== Build/Deploy the project
+* to build the example just run `mvn package` from the project root
+* then deploy the final `richfaces-example.war` on a JEE6 container (WildFly 8, JBoss EAP 6, etc.)
+* after deploying the example to your server open a browser and type 'http://localhost:8080/richfaces-example' to view the application. Note that the URL depends on the context on which your application server deployed the example application.
